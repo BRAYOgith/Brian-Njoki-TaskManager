@@ -1,4 +1,4 @@
-FROM php:8.4-cli
+FROM php:8.3-cli
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -14,8 +14,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN composer update --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader
 
-EXPOSE 10000
+EXPOSE 8080
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
