@@ -8,6 +8,6 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call(TaskSeeder::class);
+        // Seeder disabled - only manually created tasks will appear
     }
 }
