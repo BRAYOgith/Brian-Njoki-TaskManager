@@ -14,10 +14,18 @@ A modern task management application built with Laravel.
 
 - PHP 8.2+
 - Composer
-- MySQL 5.7+ or MariaDB 10.3+
+- **XAMPP** (with MySQL running on port 3306 or 3307)
 - Node.js 18+ (optional, for asset compilation)
 
 ## How to Run Locally
+
+### IMPORTANT: Before running the app, make sure XAMPP is downloaded and started.
+
+1. **Download and install XAMPP** from [apachefriends.org](https://apachefriends.org)
+2. **Start XAMPP** and ensure **MySQL** service is running
+3. **Note the MySQL port** - it is usually 3306, but may be 3307. Check XAMPP control panel.
+
+### 1. Clone and Install Dependencies
 
 ### 1. Clone and Install Dependencies
 
@@ -54,11 +62,10 @@ Create a MySQL database:
 CREATE DATABASE task_manager CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-### 4. Run Migrations and Seeders
+### 4. Run Migrations
 
 ```bash
 php artisan migrate
-php artisan db:seed
 ```
 
 ### 5. Start the Server
