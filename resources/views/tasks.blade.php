@@ -408,33 +408,33 @@
         <div id="tab-create" class="tab-content active">
             <div class="card" style="max-width: 800px; margin: 0 auto;">
                 <div class="card-header">
-                    <h2>Deploy a New Task</h2>
-                    <p>Enter the specifics below to inject a new assignment into the workflow.</p>
+                    <h2>Create New Task</h2>
+                    <p>Fill in the details below to create a new task.</p>
                 </div>
                 <form id="createTaskForm">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label>Task Directive</label>
-                            <input type="text" id="taskTitle" required placeholder="Ex: Refactor the authentication logic...">
+                            <label>Task Title</label>
+                            <input type="text" id="taskTitle" required placeholder="Enter task title...">
                         </div>
                     </div>
                     <div class="form-grid" style="margin-top: 20px;">
                         <div class="form-group">
-                            <label>Deadline Date</label>
+                            <label>Due Date</label>
                             <input type="date" id="taskDueDate" required>
                         </div>
                     </div>
                     <div class="form-grid" style="margin-top: 20px;">
                         <div class="form-group">
-                            <label>Priority Tier</label>
+                            <label>Priority</label>
                             <select id="taskPriority">
-                                <option value="high">High - Immediate Action</option>
-                                <option value="medium">Medium - Standard Queue</option>
-                                <option value="low">Low - Background Process</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
                             </select>
                         </div>
                     </div>
-                    <button type="submit" class="btn-primary" style="margin-top: 30px;">Initialize Task</button>
+                    <button type="submit" class="btn-primary" style="margin-top: 30px;">Create Task</button>
                 </form>
             </div>
         </div>
@@ -442,22 +442,22 @@
             <div class="card">
                 <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; border:none; margin-bottom: 0px;">
                     <div>
-                        <h2>Primary Task Board</h2>
-                        <p>Track execution status for your direct assignments.</p>
+                        <h2>Task Board</h2>
+                        <p>View and manage all your tasks.</p>
                     </div>
                     <div class="filter-ribbon" style="margin-bottom:0px;">
                         <select id="statusFilter" onchange="loadTasks()">
-                            <option value="">Global Filter: All</option>
-                            <option value="pending">State: Pending</option>
-                            <option value="in_progress">State: In Progress</option>
-                            <option value="done">State: Completed</option>
+                            <option value="">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="done">Completed</option>
                         </select>
-                        <button onclick="loadTasks()" class="action-btn">Sync Data</button>
+                        <button onclick="loadTasks()" class="action-btn">Refresh</button>
                     </div>
                 </div>
                 
                 <div id="tasksList">
-                    <div class="loading">Establishing secure connection... fetching items.</div>
+                    <div class="loading">Loading tasks...</div>
                 </div>
             </div>
         </div>
@@ -557,8 +557,8 @@
                 if (!tasks || tasks.length === 0) {
                     tasksList.innerHTML = `
                         <div class="empty-state">
-                            <h3>No active directives</h3>
-                            <p>Proceed to Create Task to deploy a new unit of work.</p>
+                            <h3>No tasks found</h3>
+                            <p>Create a new task to get started.</p>
                         </div>
                     `;
                     return;
@@ -567,7 +567,7 @@
                 tasksList.innerHTML = renderTasksTable(tasks, false);
             } catch (error) {
                 console.error('Error loading tasks:', error);
-                document.getElementById('tasksList').innerHTML = '<div class="empty-state"><p>Core Exception: Unable to synchronize matrix. Verify the link to the core server.</p></div>';
+                document.getElementById('tasksList').innerHTML = '<div class="empty-state"><p>Failed to load tasks. Please try again.</p></div>';
             }
         }
 
@@ -577,11 +577,11 @@
                     <table class="task-table">
                         <thead>
                             <tr>
-                                <th>Directive</th>
-                                <th>Deadline</th>
-                                <th>Priority Context</th>
-                                <th>Current State</th>
-                                <th>Controls</th>
+                                <th>Task</th>
+                                <th>Due Date</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -594,7 +594,7 @@
                                     <td>
                                         <div class="actions-cell">
                                             ${getStatusButtons(task, isReport)}
-                                            ${task.status === 'done' ? `<button onclick="deleteTask(${task.id}, ${isReport})" class="action-btn danger">Purge</button>` : ''}
+                                            ${task.status === 'done' ? `<button onclick="deleteTask(${task.id}, ${isReport})" class="action-btn danger">Delete</button>` : ''}
                                         </div>
                                     </td>
                                 </tr>
@@ -603,11 +603,11 @@
                     </table>
                 </div>
                 <div class="stats-footer">
-                    <div>Total Monitored Units: <span>${tasks.length}</span></div>
+                    <div>Total Tasks: <span>${tasks.length}</span></div>
                     <div>
                         Pending: <span>${tasks.filter(t => t.status === 'pending').length}</span> &nbsp;|&nbsp; 
-                        Active: <span>${tasks.filter(t => t.status === 'in_progress').length}</span> &nbsp;|&nbsp; 
-                        Terminated: <span>${tasks.filter(t => t.status === 'done').length}</span>
+                        In Progress: <span>${tasks.filter(t => t.status === 'in_progress').length}</span> &nbsp;|&nbsp; 
+                        Completed: <span>${tasks.filter(t => t.status === 'done').length}</span>
                     </div>
                 </div>
             `;
@@ -640,11 +640,11 @@
 
         function getStatusButtons(task, isReport) {
             if (task.status === 'pending') {
-                return `<button onclick="updateStatus(${task.id}, 'in_progress', ${isReport})" class="action-btn">Initiate</button>`;
+                return `<button onclick="updateStatus(${task.id}, 'in_progress', ${isReport})" class="action-btn">Start</button>`;
             } else if (task.status === 'in_progress') {
-                return `<button onclick="updateStatus(${task.id}, 'done', ${isReport})" class="action-btn">Finalize</button>`;
+                return `<button onclick="updateStatus(${task.id}, 'done', ${isReport})" class="action-btn">Complete</button>`;
             }
-            return '<span class="status done" style="font-size:0.8rem; font-weight:600;">System Locked</span>';
+            return '<span class="status done" style="font-size:0.8rem; font-weight:600;">Completed</span>';
         }
 
         async function updateStatus(id, newStatus, isReport) {
@@ -661,7 +661,7 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    createAlert(`Directive state shifted to ${newStatus.replace('_', ' ')}!`, 'success');
+                    createAlert('Task status updated successfully!', 'success');
                     if (isReport) {
                         document.getElementById('reportForm').dispatchEvent(new Event('submit'));
                         loadTasks();
@@ -669,16 +669,16 @@
                         loadTasks();
                     }
                 } else {
-                    createAlert(result.error || result.message || 'Exception during state transition.', 'error');
+                    createAlert(result.error || result.message || 'Failed to update task status.', 'error');
                 }
             } catch (error) {
                 console.error('Error updating status:', error);
-                createAlert('Critical failure processing state update.', 'error');
+                createAlert('Failed to update task status.', 'error');
             }
         }
 
         async function deleteTask(id, isReport) {
-            if (!confirm('Warning: This process is irreversible. Proceed with permanent purge?')) {
+            if (!confirm('Are you sure you want to delete this task?')) {
                 return;
             }
 
@@ -693,7 +693,7 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    createAlert('Target successfully purged from matrix.', 'success');
+                    createAlert('Task deleted successfully.', 'success');
                     if (isReport) {
                         document.getElementById('reportForm').dispatchEvent(new Event('submit'));
                         loadTasks();
@@ -701,11 +701,11 @@
                         loadTasks();
                     }
                 } else {
-                    createAlert(result.error || result.message || 'Exception terminating record.', 'error');
+                    createAlert(result.error || result.message || 'Failed to delete task.', 'error');
                 }
             } catch (error) {
                 console.error('Error deleting task:', error);
-                createAlert('Target lock failure. Record persists.', 'error');
+                createAlert('Failed to delete task.', 'error');
             }
         }
 
@@ -717,13 +717,13 @@
             const priority = document.getElementById('taskPriority').value;
 
             if (!title) {
-                createAlert('Task Directive missing. Provide syntax.', 'error');
+                createAlert('Please enter a task title.', 'error');
                 return;
             }
 
             const submitButton = e.target.querySelector('button');
             const originalText = submitButton.textContent;
-            submitButton.textContent = 'Processing Payload...';
+            submitButton.textContent = 'Creating...';
             submitButton.disabled = true;
 
             try {
@@ -739,7 +739,7 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    createAlert('Directive successfully injected!', 'success');
+                    createAlert('Task created successfully!', 'success');
                     document.getElementById('createTaskForm').reset();
 
                     const today = new Date().toISOString().split('T')[0];
@@ -750,15 +750,15 @@
                     switchTab('list'); 
                 } else {
                     if (result.errors) {
-                        const errors = Object.values(result.errors).flat().join('\\n');
+                        const errors = Object.values(result.errors).flat().join('\n');
                         createAlert(errors, 'error');
                     } else {
-                        createAlert(result.message || 'Server rejected payload', 'error');
+                        createAlert(result.message || 'Failed to create task.', 'error');
                     }
                 }
             } catch (error) {
                 console.error('Error creating task:', error);
-                createAlert('Network exception transmitting package.', 'error');
+                createAlert('Network error. Please try again.', 'error');
             } finally {
                 submitButton.textContent = originalText;
                 submitButton.disabled = false;
